@@ -37,32 +37,51 @@ bool GameMainScene::init() {
   // log 信息数量初始化
   infoIndex = 0;
 
-  // 初始化右侧栏玩家头像和金钱模型
-  for (int i = 0; i < 4; ++i) {
+  // 初始化右侧栏
+  rightBar = CCLayerColor::create(Color4B::GRAY);
+  rightBar->setContentSize(CCSizeMake(170, visibleSize.height));
+  rightBar->setPosition(Vec2(visibleSize.width - 170, 0));
+  this->addChild(rightBar, 1);
+  // 初始化玩家头像和金钱模型
+  auto PlayerInfo = Label::create("Players", "arial", 15);
+  PlayerInfo->setPosition(85, visibleSize.height - 25);
+  rightBar->addChild(PlayerInfo, 1);
+  for (int i = 0; i < 4; ++i) {    
+    players[i] = CCLayerColor::create(Color4B(200, 200, 0, 255));
+    players[i]->setContentSize(CCSizeMake(150, 50));
+    // layer 位置
+    float X = 10;
+    float Y = visibleSize.height - (i ? 100 + 60 * i : 100);
+    players[i]->setPosition(Vec2(X, Y));
+    rightBar->addChild(players[i], 1);
+    
     // 头像
     playerImage[i] = Sprite::create("closeNormal.png");
     // 金钱
     moneyLabel[i] = Label::create("15000", "arial", 15);
     
     // 头像位置
-    float x = origin.x + visibleSize.width - 75;
-    float y = origin.y + visibleSize.height - (i ? 25 + 50 * i : 25);
+    float x = 25;
+    float y = 25;
     playerImage[i]->setPosition(Vec2(x, y));
     playerImage[i]->setScale(0.5);
     
     // 金钱位置:头像位置右偏移30
-    moneyLabel[i]->setPosition(Vec2(x + 30, y));
+    moneyLabel[i]->setPosition(Vec2(x + 50, y));
     
-    this->addChild(playerImage[i], 1);
-    this->addChild(moneyLabel[i], 1);
+    players[i]->addChild(playerImage[i], 1);
+    players[i]->addChild(moneyLabel[i], 1);
   }
 
   // Log 窗口
+  auto LogInfo = Label::create("Events", "arial", 15);
+  LogInfo->setPosition(85, 125);
+  rightBar->addChild(LogInfo, 1);
   logLabel = Label::create("Upgrade building!\ntest\ntest\ntest\ntest\n", "arial", 15);
-  float logX = origin.x + visibleSize.width - 50;
-  float logY = origin.y + 50;
+  float logX = 75;
+  float logY = 50;
   logLabel->setPosition(Vec2(logX, logY));
-  this->addChild(logLabel, 1);
+  rightBar->addChild(logLabel, 1);
 
   // 按钮
   // 结束回合
@@ -83,9 +102,9 @@ bool GameMainScene::init() {
   auto upgradeButton = MenuItemLabel::create(upgradeLabel/*, CC_CALLBACK_0(Controller::upgradeLand, this)*/);
   endButton->setPosition(Vec2(origin.x + 25, origin.y + 25));
   rollButton->setPosition(Vec2(origin.x + 75, origin.y + 25));
-  skillButton->setPosition(Vec2(logX - 100, origin.y + 25));
-  sellButton->setPosition(Vec2(logX - 150, origin.y + 25));
-  upgradeButton->setPosition(Vec2(logX - 200, origin.y + 25));
+  skillButton->setPosition(Vec2(visibleSize.width - 225, origin.y + 25));
+  sellButton->setPosition(Vec2(visibleSize.width - 275, origin.y + 25));
+  upgradeButton->setPosition(Vec2(visibleSize.width - 325, origin.y + 25));
 
   auto menu = Menu::create(endButton, rollButton, skillButton, sellButton, upgradeButton, NULL);
   menu->setPosition(Vec2::ZERO);
@@ -113,23 +132,33 @@ void GameMainScene::updatePlayerState(int id) {
   //moneyLabel[i]->setString(std::to_string(Controller.getInstacne().getMoney(id)));
 }
 
-/*回合开始
+/*
+ * 回合开始
+ * 更改当前回合玩家背景底色
+ * 抽取技能
  */
 void GameMainScene::RoundStart() {
   //int playerID = Control.getInstance().getUserID();
-  /* 
-   * 改底色
-   */
+  //players[playerID]->setColor(Color3B::RED);
 
   //skillID = Controller.getInstance().newSkillID();
   //Action.getInstance().skillBling();
 }
 
+/*
+ * 玩家破产
+ * 玩家背景底色变灰色
+ */
 void GameMainScene::playerLose() {
   // int playerID = Controller.getInstance().getUserID();
-  // 底色变灰色
+  //players[playerID]->setColor(Color3B::GREY);
 }
 
+/*
+ * 事件输出
+ * 最多输出 5 条信息，多了删去最远一条
+ * 可能存在信息过长而显示不全，注意传过参之前换行截断
+ */
 void GameMainScene::log(std::string msg) {
   if (infoIndex < 5) {
     logInfo[infoIndex] = msg;
@@ -148,8 +177,16 @@ void GameMainScene::log(std::string msg) {
   logLabel->setString(temp);
 }
 
+/*
+ * 回合结束
+ * 当前玩家背景底色恢复
+ * 通知控制模块更新玩家状态
+ */
 void GameMainScene::roundEnd() {
   if (/* Controller.getInstance().isRolled()*/true) {
+    //int playerID = Control.getInstance().getUserID();
+    //players[playerID]->setColor(Color3B::YELLOW);
+    
     //Controller.getInstance().nextPlayer()
   }
 }

@@ -33,12 +33,14 @@ private:
 
   int skillID;
   
-  int infoIndex;
+  CCLayerColor *rightBar;
 
-  std::string logInfo[5];
-
+  CCLayerColor *players[4];
   Label *moneyLabel[4];
   Sprite *playerImage[4];
+  
   Label *logLabel;
+  int infoIndex;
+  std::string logInfo[5];
 };
 #endif

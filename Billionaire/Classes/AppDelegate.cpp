@@ -1,9 +1,10 @@
 #include "AppDelegate.h"
-#include "GameMainScene.h"
-#include "HelloWorldScene.h"
+#include "GameScene.h"
+#include "MenuScene.h"
 
 // #define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1
+#define _CRT_SECURE_NO_WARNINGS
 
 #if USE_AUDIO_ENGINE && USE_SIMPLE_AUDIO_ENGINE
 #error "Don't use AudioEngine and SimpleAudioEngine at the same time. Please just select one in your game!"
@@ -19,7 +20,7 @@ using namespace CocosDenshion;
 
 USING_NS_CC;
 
-static cocos2d::Size designResolutionSize = cocos2d::Size(480, 320);
+static cocos2d::Size designResolutionSize = cocos2d::Size(960, 640);
 static cocos2d::Size smallResolutionSize = cocos2d::Size(480, 320);
 static cocos2d::Size mediumResolutionSize = cocos2d::Size(1024, 768);
 static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
@@ -60,9 +61,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto glview = director->getOpenGLView();
     if(!glview) {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
-        glview = GLViewImpl::createWithRect("Billionaire", cocos2d::Rect(0, 0, designResolutionSize.width, designResolutionSize.height));
+        glview = GLViewImpl::createWithRect("miner", cocos2d::Rect(0, 0, designResolutionSize.width, designResolutionSize.height));
 #else
-        glview = GLViewImpl::create("Billionaire");
+        glview = GLViewImpl::create("miner");
 #endif
         director->setOpenGLView(glview);
     }
@@ -94,8 +95,45 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     register_all_packages();
 
-    // create a scene. it's an autorelease object
-    auto scene = GameMainScene::createScene();
+	// load game resource
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("general-sheet.plist");
+	char totalFrames = 3;
+	char frameName[20];
+	Animation* legAnimation = Animation::create();
+
+	for (int i = 0; i < totalFrames; i++)
+	{
+		sprintf(frameName, "miner-leg-%d.png", i);
+		legAnimation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(frameName));
+	}
+	legAnimation->setDelayPerUnit(0.1);
+	AnimationCache::getInstance()->addAnimation(legAnimation, "legAnimation");
+
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("level-sheet.plist");
+	char mouseTotalFrames = 8;
+	char mouseFrameName[20];
+	Animation* mouseAnimation = Animation::create();
+
+	for (int i = 0; i < mouseTotalFrames; i++) {
+		sprintf(mouseFrameName, "gem-mouse-%d.png", i);
+		mouseAnimation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(mouseFrameName));
+	}
+	mouseAnimation->setDelayPerUnit(0.1);
+	AnimationCache::getInstance()->addAnimation(mouseAnimation, "mouseAnimation");
+
+	char diamondTotalFrames = 6;
+	char diamondFrameName[20];
+	Animation* diamondAnimation = Animation::create();
+
+	for (int i = 0; i < diamondTotalFrames; i++) {
+		sprintf(diamondFrameName, "diamond-%d.png", i);
+		diamondAnimation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(diamondFrameName));
+	}
+	diamondAnimation->setDelayPerUnit(0.1);
+	AnimationCache::getInstance()->addAnimation(diamondAnimation, "diamondAnimation");
+
+	// create a scene. it's an autorelease object
+    auto scene = MenuScene::createScene();
 
     // run
     director->runWithScene(scene);

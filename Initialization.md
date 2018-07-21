@@ -8,7 +8,7 @@
 
 ### 游戏页面
 
-#### 右侧栏
+#### 右侧栏
 
 - 人物状态
 
@@ -42,7 +42,7 @@
 void GameStart(); // 调用动画模块／控制系统初始化方法
 void RoundStart(){
   /* 显示当前玩家
-   * getUserID()
+   * getUserID()
    * 从游戏状态获取当前玩家id
    * 改底色
    */
@@ -66,7 +66,7 @@ void updatePlayerState() {
   // 更新金钱 getMoney()
 }
 
-void log(stirng msg) {
+void log(string msg) {
   // 显示 msg 信息
 }
 
@@ -104,7 +104,7 @@ void playerMove(int id, int pos, int steps) {
   - 地皮状态
     价格／升级次数／拥有者
   - 回合状态
-    当前玩家／骰子点数(0标志未投)／技能id／技能释放标志
+    当前玩家／骰子点数(0标志未投)／技能id／技能释放标志
 
 ```cpp
 void initial(); // 初始化游戏状态
@@ -112,10 +112,10 @@ void initial(); // 初始化游戏状态
 int getUserID();
 int newSkillID(); // random 一下
 int getSkillID();
-int getMoney(); // 更新当前玩家金钱
+int getMoney(int id); // 获取玩家金钱
 
 int roll() {
-  // random 修改当前状态下的骰子点数
+  // random 修改当前状态下的骰子点数
   // log(骰子点数)
   // playerMove(int id, int pos, int steps)
   // 更新人物位置
@@ -125,7 +125,8 @@ void payCharge(){
   // 给过路费
   // log()
   // 更新金钱
-  // updatePlayerState()
+  // updatePlayerState(id) 扣钱
+  // updatePlayerState(id) 加钱
   // 判断破产(yes的话，调用UI模块的playerLose(), log())
 }
 

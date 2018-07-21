@@ -9,7 +9,7 @@ class GameMainScene : public cocos2d::Scene {
 public:
   static cocos2d::Scene* createScene();
 
-  GameMainScene* getInstance();
+  static GameMainScene* getInstance();
 
   virtual bool init();
 

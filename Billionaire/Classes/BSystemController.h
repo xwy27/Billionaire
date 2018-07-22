@@ -41,15 +41,15 @@ namespace Emilia {
     
     static BSystemController* _instance;
 
-    PlayerStatus* players;
-    Land* lands;
+    PlayerStatus* players = nullptr;
+    Land* lands = nullptr;
 
     int presentPlayer;
     int rollNumer;
     int skillID;
     bool skillUsed;
 
-    GameMainScene* sceneInstance;
+    //GameMainScene* sceneInstance;
     // AnimationController* aniInstance;
 
     BSystemController();

@@ -3,6 +3,8 @@
 using namespace Emilia;
 using std::string;
 
+BSystemController* BSystemController::_instance = nullptr;
+
 BSystemController::BSystemController() {}
 
 BSystemController::~BSystemController() {
@@ -23,7 +25,6 @@ void BSystemController::initial() {
   rollNumer = 0;
   skillID = 0;
   skillUsed = false;
-  sceneInstance = GameMainScene::getInstance();
   // aniInstance = AnimationController::getInstance();
 
   if (players == nullptr)
@@ -64,12 +65,16 @@ int* BSystemController::getLandsPrice() {
 }
 
 int BSystemController::roll() {
-  rollNumer = random() % 6 + 1;
-  sceneInstance->log("You rolled " + rollNumer);
-  // aniInstance->playerMove(presentPlayer)
-  players[presentPlayer].location += rollNumer;
-  players[presentPlayer].location %= MAX_LANDS_NUMBER;
-  return rollNumer;
+  if (!isRolled()) {
+    rollNumer = random() % 6 + 1;
+    GameMainScene::getInstance()->log("You rolled " + rollNumer);
+    // aniInstance->playerMove(presentPlayer)
+    players[presentPlayer].location += rollNumer;
+    players[presentPlayer].location %= MAX_LANDS_NUMBER;
+    return rollNumer;
+  } else {
+    GameMainScene::getInstance()->log("You've rolled!");
+  }
 }
 
 void BSystemController::payCharge() {
@@ -83,45 +88,45 @@ void BSystemController::payCharge() {
     temp += lands[players[presentPlayer].location].getCharge();
     temp += " to Player ";
     temp += landOwner;
-    sceneInstance->log(temp);
-    sceneInstance->updatePlayerState(presentPlayer);
-    sceneInstance->updatePlayerState(landOwner);
+    GameMainScene::getInstance()->log(temp);
+    GameMainScene::getInstance()->updatePlayerState(presentPlayer);
+    GameMainScene::getInstance()->updatePlayerState(landOwner);
   }
 
   if (players[presentPlayer].wealth < 0) {
-    sceneInstance->log("You have no money to pay for the charge! You lose.");
-    sceneInstance->playerLose();
+    GameMainScene::getInstance()->log("You have no money to pay for the charge! \nYou lose.");
+    GameMainScene::getInstance()->playerLose();
   }
 }
 
 void BSystemController::useSkill() {
   if (skillUsed) {
-    sceneInstance->log("You've used your skill!");
+    GameMainScene::getInstance()->log("You've used your skill!");
     return;
   }
   auto temp = lands[players[presentPlayer].location].price;
   switch(skillID) {
     case 0:
       lands[players[presentPlayer].location].price *= 1.3;
-      sceneInstance->log("The basic price of this land rise!");
+      GameMainScene::getInstance()->log("The basic price of this land rise!");
     break;
     case 1:
       lands[players[presentPlayer].location].price /= 1.3;
-      sceneInstance->log("The basic price of this land fall!");
+      GameMainScene::getInstance()->log("The basic price of this land fall!");
     break;
     case 2:
       if (players[presentPlayer].wealth > 1000) {
         if (lands[players[presentPlayer].location].level > 0) {
           players[presentPlayer].wealth -= 1000;
           lands[players[presentPlayer].location].level -= 1;
-          sceneInstance->log("You spent 1000 to destroy one building!");
+          GameMainScene::getInstance()->log("You spent 1000 to destroy one building!");
         }
         else {
-          sceneInstance->log("No building on this land...");
+          GameMainScene::getInstance()->log("No building on this land...");
         }
       }
       else {
-        sceneInstance->log("Insufficient fund...");
+        GameMainScene::getInstance()->log("Insufficient fund...");
       }
     break;
     case 3:
@@ -142,14 +147,14 @@ void BSystemController::buyLand() {
       players[presentPlayer].wealth -= presentLand.price;
       players[presentPlayer].lands.push_back(players[presentPlayer].location);
       presentLand.owner = presentPlayer;
-      sceneInstance->log("Successfully bought!");
+      GameMainScene::getInstance()->log("Successfully bought!");
     }
     else {
-      sceneInstance->log("Insufficient fund...");
+      GameMainScene::getInstance()->log("Insufficient fund...");
     }
   }
   else {
-    sceneInstance->log("This land has its owner");
+    GameMainScene::getInstance()->log("This land has its owner");
   }
 }
 
@@ -159,11 +164,11 @@ void BSystemController::upgradeLand() {
     presentLand.level < 3) {
     presentLand.level += 1;
     players[presentPlayer].wealth -= 2000;
-    sceneInstance->log("Successfully Upgrade!");
-    sceneInstance->updatePlayerState(presentPlayer);
+    GameMainScene::getInstance()->log("Successfully Upgrade!");
+    GameMainScene::getInstance()->updatePlayerState(presentPlayer);
   }
   else {
-    sceneInstance->log("Failed! Due to insufficient funds, land ownership or current level of land.");
+    GameMainScene::getInstance()->log("Failed! Due to insufficient funds, \nland ownership or current level of land.");
   }
 }
 
@@ -184,10 +189,10 @@ void BSystemController::sellLand() {
     string temp = "You gained ";
     temp += gain;
     temp += " for selling.";
-    sceneInstance->log(temp);
+    GameMainScene::getInstance()->log(temp);
   }
   else {
-    sceneInstance->log("You're not able to sell others' land...");
+    GameMainScene::getInstance()->log("You're not able to sell others' land...");
   }
 }
 
@@ -203,5 +208,5 @@ void BSystemController::nextPlayer() {
   rollNumer = 0;
   skillUsed = false;
 
-  sceneInstance->RoundStart();
+  GameMainScene::getInstance()->RoundStart();
 }

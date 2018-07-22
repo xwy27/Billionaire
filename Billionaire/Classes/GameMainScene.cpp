@@ -5,8 +5,11 @@
 USING_NS_CC;
 using namespace Emilia;
 
-Scene* GameMainScene::createScene() {
-  return GameMainScene::create();
+GameMainScene* GameMainScene::instance = nullptr;
+
+GameMainScene* GameMainScene::createScene() {
+  instance = GameMainScene::create();
+  return instance;
 }
 
 // Print useful error message instead of segfaulting when files are not there.
@@ -50,7 +53,7 @@ bool GameMainScene::init() {
     // 头像
     playerImage[i] = Sprite::create("closeNormal.png");
     // 金钱
-    moneyLabel[i] = Label::create("15000", "arial", 15);
+    moneyLabel[i] = Label::create("10000", "arial", 15);
     
     // 头像位置
     float x = 25;
@@ -69,7 +72,7 @@ bool GameMainScene::init() {
   auto LogInfo = Label::create("Events", "arial", 15);
   LogInfo->setPosition(85, 125);
   rightBar->addChild(LogInfo, 1);
-  logLabel = Label::create("", "arial", 15);
+  logLabel = Label::create("Test", "arial", 15);
   float logX = 75;
   float logY = 50;
   logLabel->setPosition(Vec2(logX, logY));

@@ -73,48 +73,53 @@ void Actions::roll(int rollNumer) {
 
 void Actions::playerMove(int id, int pos, int steps)
 {
-	auto pay = CallFunc::create([this]() {
+	auto pay = CallFunc::create([this, id]() {
 		BSystemController::getInstance()->payCharge();
+		players[id]->getActionManager()->removeAllActionsByTag(1, players[id]);
 	});
 
 	while (steps > 0) {
-		if (pos < 10) {
+		if (pos < 9) {
 			auto animation = Animation::createWithSpriteFrames(playerMoving[id * 4 + 3], 0.3f);
-			auto animate = Animate::create(animation);
+			auto animate = RepeatForever::create(Animate::create(animation));
+			animate->setTag(1);
+			players[id]->runAction(animate);
 
-			int stepped = pos + steps > 10 ? 10 - pos : steps;
-			players[id]->runAction(Sequence::create(Spawn::create(RepeatForever::create(animate), 
-				MoveBy::create(steps, Vec2(0, stepped * 64))), pay, nullptr));
+			int stepped = pos + steps > 9 ? 9 - pos : steps;
+			players[id]->runAction(Sequence::create(MoveBy::create(steps, Vec2(0, stepped * 64)), pay, nullptr));
 			steps -= stepped;
 			pos += stepped;
 		}
-		else if (pos < 20) {
+		else if (pos < 19) {
 			auto animation = Animation::createWithSpriteFrames(playerMoving[id * 4 + 2], 0.3f);
-			auto animate = Animate::create(animation);
+			auto animate = RepeatForever::create(Animate::create(animation));
+			animate->setTag(1);
+			players[id]->runAction(animate);
 
-			int stepped = pos + steps > 20 ? 20 - pos : steps;
-			players[id]->runAction(Sequence::create(Spawn::create(RepeatForever::create(animate),
-				MoveBy::create(steps, Vec2(0, stepped * 64))), pay, nullptr));
+			int stepped = pos + steps > 19 ? 19 - pos : steps;
+			players[id]->runAction(Sequence::create(MoveBy::create(steps, Vec2(stepped * 64, 0)), pay, nullptr));
 			steps -= stepped;
 			pos += stepped;
 		}
-		else if (pos < 30) {
+		else if (pos < 29) {
 			auto animation = Animation::createWithSpriteFrames(playerMoving[id * 4], 0.3f);
-			auto animate = Animate::create(animation);
+			auto animate = RepeatForever::create(Animate::create(animation));
+			animate->setTag(1);
+			players[id]->runAction(animate);
 
-			int stepped = pos + steps > 30 ? 30 - pos : steps;
-			players[id]->runAction(Sequence::create(Spawn::create(RepeatForever::create(animate),
-				MoveBy::create(steps, Vec2(0, stepped * 64))), pay, nullptr));
+			int stepped = pos + steps > 29 ? 29 - pos : steps;
+			players[id]->runAction(Sequence::create(MoveBy::create(steps, Vec2(0, 0 - stepped * 64)), pay, nullptr));
 			steps -= stepped;
 			pos += stepped;
 		}
-		else if (pos < 40) {
+		else if (pos < 39) {
 			auto animation = Animation::createWithSpriteFrames(playerMoving[id * 4 + 1], 0.3f);
-			auto animate = Animate::create(animation);
+			auto animate = RepeatForever::create(Animate::create(animation));
+			animate->setTag(1);
+			players[id]->runAction(animate);
 
-			int stepped = pos + steps > 40 ? 40 - pos : steps;
-			players[id]->runAction(Sequence::create(Spawn::create(RepeatForever::create(animate),
-				MoveBy::create(steps, Vec2(0, stepped * 64))), pay, nullptr));
+			int stepped = pos + steps > 39 ? 39 - pos : steps;
+			players[id]->runAction(Sequence::create(MoveBy::create(steps, Vec2(0 - stepped * 64, 0)), pay, nullptr));
 			steps -= stepped;
 			pos += stepped;
 		}

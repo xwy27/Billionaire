@@ -89,7 +89,7 @@ void BSystemController::payCharge() {
     temp += " pay ";
     temp += std::to_string(lands[players[presentPlayer].location].getCharge());
     temp += " to Player ";
-    temp += landOwner;
+    temp += std::to_string(landOwner);
     GameMainScene::getInstance()->log(temp);
     GameMainScene::getInstance()->updatePlayerState(presentPlayer);
     GameMainScene::getInstance()->updatePlayerState(landOwner);
@@ -149,7 +149,7 @@ void BSystemController::buyLand() {
       players[presentPlayer].wealth -= presentLand.price;
       players[presentPlayer].lands.push_back(players[presentPlayer].location);
       presentLand.owner = presentPlayer;
-      GameMainScene::getInstance()->log("Successfully bought!");
+      GameMainScene::getInstance()->log("Successfully bought with " + std::to_string(presentLand.price) + "!");
     }
     else {
       GameMainScene::getInstance()->log("Insufficient fund...");
@@ -166,7 +166,7 @@ void BSystemController::upgradeLand() {
     presentLand.level < 3) {
     presentLand.level += 1;
     players[presentPlayer].wealth -= 2000;
-    GameMainScene::getInstance()->log("Successfully Upgrade!");
+    GameMainScene::getInstance()->log("Successfully Upgrade with 2000!");
     GameMainScene::getInstance()->updatePlayerState(presentPlayer);
   }
   else {
@@ -184,6 +184,7 @@ void BSystemController::sellLand() {
       ++iter) {
       if (*iter == presentLocation) {
         players[presentPlayer].lands.erase(iter);
+        break;
       }
     }
     auto gain = (int)((presentLand.price + presentLand.level * 2000) * 0.5);

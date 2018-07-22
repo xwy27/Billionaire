@@ -109,9 +109,11 @@ bool GameMainScene::init() {
   auto skillLabel = Label::createWithTTF(ttfConfig, "Skill");
   // 卖房子
   auto sellLabel = Label::createWithTTF(ttfConfig, "Sell");
-  // 买/建房子
-  auto upgradeLabel = Label::createWithTTF(ttfConfig, "Buy");
-  
+  // 买地
+  auto buyLabel = Label::createWithTTF(ttfConfig, "Buy");
+  // 升级房子
+  auto upgradeLabel = Label::createWithTTF(ttfConfig, "Upgrade");
+
   auto overButton = MenuItemLabel::create(overLabel/*, CC_CALLBACK_0(BSystemController::gameOver, BSystemController::getInstance())*/);
   auto musicButton = MenuItemLabel::create(musicLabel, [=] (Ref* sender) {
     auto audio = SimpleAudioEngine::getInstance();
@@ -125,6 +127,7 @@ bool GameMainScene::init() {
   auto rollButton = MenuItemLabel::create(rollLabel, CC_CALLBACK_0(BSystemController::roll, BSystemController::getInstance()));
   auto skillButton = MenuItemLabel::create(skillLabel, CC_CALLBACK_0(BSystemController::useSkill, BSystemController::getInstance()));
   auto sellButton = MenuItemLabel::create(sellLabel, CC_CALLBACK_0(BSystemController::sellLand, BSystemController::getInstance()));
+  auto buyButton = MenuItemLabel::create(buyLabel, CC_CALLBACK_0(BSystemController::buyLand, BSystemController::getInstance()));
   auto upgradeButton = MenuItemLabel::create(upgradeLabel, CC_CALLBACK_0(BSystemController::upgradeLand, BSystemController::getInstance()));
   overButton->setPosition(Vec2(origin.x + 50, origin.x + visibleSize.height - 25));
   musicButton->setPosition(Vec2(origin.x + 50, origin.x + visibleSize.height - 50));
@@ -132,9 +135,11 @@ bool GameMainScene::init() {
   rollButton->setPosition(Vec2(origin.x + 75, origin.y + 25));
   skillButton->setPosition(Vec2(visibleSize.width - 215, origin.y + 25));
   sellButton->setPosition(Vec2(visibleSize.width - 275, origin.y + 25));
-  upgradeButton->setPosition(Vec2(visibleSize.width - 325, origin.y + 25));
+  upgradeButton->setPosition(Vec2(visibleSize.width - 345, origin.y + 25));
+  buyButton->setPosition(Vec2(visibleSize.width - 415, origin.y + 25));
 
-  auto menu = Menu::create(overButton, musicButton, endButton, rollButton, skillButton, sellButton, upgradeButton, NULL);
+  auto menu = Menu::create(overButton, musicButton, endButton, rollButton, skillButton,
+    sellButton, upgradeButton, buyButton, NULL);
   menu->setPosition(Vec2::ZERO);
   this->addChild(menu, 1);
 

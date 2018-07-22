@@ -98,7 +98,7 @@ void BSystemController::payCharge() {
     temp += " pay ";
     temp += std::to_string(lands[players[presentPlayer].location].getCharge());
     temp += " to Player ";
-    temp += landOwner;
+    temp += std::to_string(landOwner);
     GameMainScene::getInstance()->log(temp);
     GameMainScene::getInstance()->updatePlayerState(presentPlayer);
     GameMainScene::getInstance()->updatePlayerState(landOwner);

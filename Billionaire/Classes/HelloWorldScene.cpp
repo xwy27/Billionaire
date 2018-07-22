@@ -115,7 +115,7 @@ void HelloWorld::Music() {
   if (audio->isBackgroundMusicPlaying()) {
     audio->stopBackgroundMusic();
   } else {
-    audio->playBackgroundMusic("music/bgm.mp3");
+    audio->playBackgroundMusic("music/bgm.mp3", true);
   }
 }
 

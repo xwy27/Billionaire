@@ -114,13 +114,13 @@ bool GameMainScene::init() {
   // Éý¼¶·¿×Ó
   auto upgradeLabel = Label::createWithTTF(ttfConfig, "Upgrade");
 
-  auto overButton = MenuItemLabel::create(overLabel/*, CC_CALLBACK_0(BSystemController::gameOver, BSystemController::getInstance())*/);
+  auto overButton = MenuItemLabel::create(overLabel, CC_CALLBACK_0(BSystemController::gameOver, BSystemController::getInstance()));
   auto musicButton = MenuItemLabel::create(musicLabel, [=] (Ref* sender) {
     auto audio = SimpleAudioEngine::getInstance();
     if (audio->isBackgroundMusicPlaying()) {
       audio->stopBackgroundMusic();
     } else {
-      audio->playBackgroundMusic("music/bgm.mp3");
+      audio->playBackgroundMusic("music/bgm.mp3", true);
     }
   });
   auto endButton = MenuItemLabel::create(endLabel, CC_CALLBACK_0(GameMainScene::roundEnd, this));

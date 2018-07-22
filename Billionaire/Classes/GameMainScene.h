@@ -9,7 +9,12 @@ class GameMainScene : public cocos2d::Scene {
 public:
   static cocos2d::Scene* createScene();
 
-  static GameMainScene* getInstance();
+  static GameMainScene* getInstance() {
+    if (instance == NULL) {
+      instance = new GameMainScene();
+    }
+    return instance;
+  }
 
   virtual bool init();
 
@@ -29,7 +34,8 @@ public:
   CREATE_FUNC(GameMainScene);
 
 private:
-  GameMainScene* instance;
+
+  static GameMainScene* instance;
 
   int skillID;
   
@@ -43,4 +49,5 @@ private:
   int infoIndex;
   std::string logInfo[5];
 };
+
 #endif

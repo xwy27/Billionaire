@@ -1,7 +1,9 @@
 #include "GameMainScene.h"
 #include "SimpleAudioEngine.h"
+#include "BSystemController.h"
 
 USING_NS_CC;
+using namespace Emilia;
 
 Scene* GameMainScene::createScene() {
   return GameMainScene::create();
@@ -11,16 +13,6 @@ Scene* GameMainScene::createScene() {
 static void problemLoading(const char* filename) {
   printf("Error while loading: %s\n", filename);
   printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in GameMainSceneScene.cpp\n");
-}
-
-/*
- * 单例模式，返回 GameMainScene 的单例
- */
-GameMainScene* GameMainScene::getInstance() {
-  if (instance == NULL) {
-    instance = new GameMainScene();
-  }
-  return instance;
 }
 
 /*
@@ -77,7 +69,7 @@ bool GameMainScene::init() {
   auto LogInfo = Label::create("Events", "arial", 15);
   LogInfo->setPosition(85, 125);
   rightBar->addChild(LogInfo, 1);
-  logLabel = Label::create("Upgrade building!\ntest\ntest\ntest\ntest\n", "arial", 15);
+  logLabel = Label::create("", "arial", 15);
   float logX = 75;
   float logY = 50;
   logLabel->setPosition(Vec2(logX, logY));
@@ -96,10 +88,10 @@ bool GameMainScene::init() {
   auto upgradeLabel = Label::create("Buy", "arial", 15);
   
   auto endButton = MenuItemLabel::create(endLabel, CC_CALLBACK_0(GameMainScene::roundEnd, this));
-  auto rollButton = MenuItemLabel::create(rollLabel/*, CC_CALLBACK_0(Controller::roll, this)*/);
-  auto skillButton = MenuItemLabel::create(skillLabel/*, CC_CALLBACK_0(Controller::useSkill, this)*/);
-  auto sellButton = MenuItemLabel::create(sellLabel/*, CC_CALLBACK_0(Controller::sellLand, this)*/);
-  auto upgradeButton = MenuItemLabel::create(upgradeLabel/*, CC_CALLBACK_0(Controller::upgradeLand, this)*/);
+  auto rollButton = MenuItemLabel::create(rollLabel, CC_CALLBACK_0(BSystemController::roll, BSystemController::getInstance()));
+  auto skillButton = MenuItemLabel::create(skillLabel, CC_CALLBACK_0(BSystemController::useSkill, BSystemController::getInstance()));
+  auto sellButton = MenuItemLabel::create(sellLabel, CC_CALLBACK_0(BSystemController::sellLand, BSystemController::getInstance()));
+  auto upgradeButton = MenuItemLabel::create(upgradeLabel, CC_CALLBACK_0(BSystemController::upgradeLand, BSystemController::getInstance()));
   endButton->setPosition(Vec2(origin.x + 25, origin.y + 25));
   rollButton->setPosition(Vec2(origin.x + 75, origin.y + 25));
   skillButton->setPosition(Vec2(visibleSize.width - 225, origin.y + 25));
@@ -121,7 +113,7 @@ bool GameMainScene::init() {
  */
 void GameMainScene::GameStart() {
   //Action.getInstance().initial();
-  //Control.getInstance().initial();
+  BSystemController::getInstance()->initial();
   RoundStart();
 }
 
@@ -129,7 +121,7 @@ void GameMainScene::GameStart() {
  * 更新当前回合玩家金钱数量
  */
 void GameMainScene::updatePlayerState(int id) {
-  //moneyLabel[i]->setString(std::to_string(Controller.getInstacne().getMoney(id)));
+  moneyLabel[id]->setString(std::to_string(BSystemController::getInstance()->getMoney(id)));
 }
 
 /*
@@ -138,10 +130,10 @@ void GameMainScene::updatePlayerState(int id) {
  * 抽取技能
  */
 void GameMainScene::RoundStart() {
-  //int playerID = Control.getInstance().getUserID();
-  //players[playerID]->setColor(Color3B::RED);
+  int playerID = BSystemController::getInstance()->getUserID();
+  players[playerID]->setColor(Color3B::RED);
 
-  //skillID = Controller.getInstance().newSkillID();
+  skillID = BSystemController::getInstance()->newSkillID();
   //Action.getInstance().skillBling();
 }
 
@@ -150,8 +142,8 @@ void GameMainScene::RoundStart() {
  * 玩家背景底色变灰色
  */
 void GameMainScene::playerLose() {
-  // int playerID = Controller.getInstance().getUserID();
-  //players[playerID]->setColor(Color3B::GREY);
+  int playerID = BSystemController::getInstance()->getUserID();
+  players[playerID]->setColor(Color3B::GRAY);
 }
 
 /*
@@ -183,10 +175,10 @@ void GameMainScene::log(std::string msg) {
  * 通知控制模块更新玩家状态
  */
 void GameMainScene::roundEnd() {
-  if (/* Controller.getInstance().isRolled()*/true) {
-    //int playerID = Control.getInstance().getUserID();
-    //players[playerID]->setColor(Color3B::YELLOW);
+  if (BSystemController::getInstance()->isRolled()) {
+    int playerID = BSystemController::getInstance()->getUserID();
+    players[playerID]->setColor(Color3B::YELLOW);
     
-    //Controller.getInstance().nextPlayer()
+    BSystemController::getInstance()->nextPlayer();
   }
 }

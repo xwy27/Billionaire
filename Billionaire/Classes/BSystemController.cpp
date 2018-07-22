@@ -99,6 +99,7 @@ void BSystemController::useSkill() {
     sceneInstance->log("You've used your skill!");
     return;
   }
+  auto temp = lands[players[presentPlayer].location].price;
   switch(skillID) {
     case 0:
       lands[players[presentPlayer].location].price *= 1.3;
@@ -124,7 +125,6 @@ void BSystemController::useSkill() {
       }
     break;
     case 3:
-      auto temp = lands[players[presentPlayer].location].price;
       lands[players[presentPlayer].location].price *= 0.8;
       buyLand();
       lands[players[presentPlayer].location].price = temp;

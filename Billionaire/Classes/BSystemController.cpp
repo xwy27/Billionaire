@@ -39,7 +39,7 @@ void BSystemController::initial() {
   
   for (auto i = 0; i < MAX_LANDS_NUMBER; ++i) {
     lands[i].initial();
-    lands[i].price = 100 * random(1, 10);
+    lands[i].price = 100 * random(10, 20);
   }
 }
 
@@ -74,6 +74,10 @@ int BSystemController::roll() {
 	aniInstance->roll(rollNumer);
 	aniInstance->playerMove(presentPlayer, players[presentPlayer].location, rollNumer);
     players[presentPlayer].location += rollNumer;
+    if (players[presentPlayer].location >= MAX_LANDS_NUMBER) {
+      players[presentPlayer].wealth += 2000;
+      GameMainScene::getInstance()->log("As a reward of passing the start point, you gained 2000!");
+    }
     players[presentPlayer].location %= MAX_LANDS_NUMBER;
     return rollNumer;
   } else {
@@ -160,6 +164,7 @@ void BSystemController::buyLand() {
       players[presentPlayer].wealth -= presentLand.price;
       players[presentPlayer].lands.push_back(players[presentPlayer].location);
       presentLand.owner = presentPlayer;
+      GameMainScene::getInstance()->updatePlayerState(presentPlayer);
       GameMainScene::getInstance()->log("Successfully bought!");
     }
     else {
@@ -208,6 +213,7 @@ void BSystemController::sellLand() {
     temp += std::to_string(gain);
     temp += " for selling.";
     GameMainScene::getInstance()->log(temp);
+    GameMainScene::getInstance()->updatePlayerState(presentPlayer);
   }
   else {
     GameMainScene::getInstance()->log("You're not able to sell others' land...");
@@ -274,6 +280,7 @@ void BSystemController::gameOver() {
   result += "4th: Player " + std::to_string(orders[3]) + "\n";
   result += "\tWealth: " + std::to_string(wealths[orders[3]]) + "\n";
   result += "\tWorth of Houses: " + std::to_string(houses[orders[3]]) + "\n";
-
+  initial();
+  Director::getInstance()->replaceScene(GameMainScene::createScene());
   GameMainScene::getInstance()->log(result);
 }

@@ -1,5 +1,6 @@
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
+#include "GameMainScene.h"
 
 USING_NS_CC;
 
@@ -51,8 +52,13 @@ bool HelloWorld::init()
         closeItem->setPosition(Vec2(x,y));
     }
 
+
+	auto musicLabel = Label::create("Music", "arial", 30);
+	auto musicButton = MenuItemLabel::create(musicLabel, CC_CALLBACK_0(HelloWorld::Music, this));
+	musicButton->setPosition(Vec2(origin.x + 100, origin.y + 50));
+
     // create menu, it's an autorelease object
-    auto menu = Menu::create(closeItem, NULL);
+    auto menu = Menu::create(musicButton, closeItem, NULL);
     menu->setPosition(Vec2::ZERO);
     this->addChild(menu, 1);
 
@@ -62,7 +68,7 @@ bool HelloWorld::init()
     // add a label shows "Hello World"
     // create and initialize a label
 
-    auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
+    auto label = Label::createWithTTF("Billionaire", "fonts/Marker Felt.ttf", 24);
     if (label == nullptr)
     {
         problemLoading("'fonts/Marker Felt.ttf'");
@@ -78,7 +84,7 @@ bool HelloWorld::init()
     }
 
     // add "HelloWorld" splash screen"
-    auto sprite = Sprite::create("HelloWorld.png");
+    auto sprite = Sprite::create("grass.jpg");
     if (sprite == nullptr)
     {
         problemLoading("'HelloWorld.png'");
@@ -87,11 +93,39 @@ bool HelloWorld::init()
     {
         // position the sprite on the center of the screen
         sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-
+		sprite->setScale(1.1);
         // add the sprite as a child to this layer
         this->addChild(sprite, 0);
     }
+
+	//开始按钮
+	auto board = Sprite::create("board.png");
+	board->setPosition(Vec2(250 + origin.x, 150 + origin.y));
+	board->setScale(0.8);
+	this->addChild(board, 1);
+
+	//触摸事件
+	EventListenerTouchOneByOne* listener = EventListenerTouchOneByOne::create();
+	listener->setSwallowTouches(true);
+	listener->onTouchBegan = CC_CALLBACK_2(HelloWorld::gameStart, this);
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, board);
+
+
     return true;
+}
+
+bool HelloWorld::gameStart(Touch *touch, Event *unused_event) {
+	auto target = unused_event->getCurrentTarget()->getBoundingBox();
+
+	if (target.containsPoint(touch->getLocation())) {
+		auto scene = GameMainScene::createScene();
+		Director::getInstance()->replaceScene(scene);
+		return true;
+	}
+}
+
+void HelloWorld::Music() {
+
 }
 
 

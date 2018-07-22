@@ -1,6 +1,7 @@
 #include "GameMainScene.h"
 #include "SimpleAudioEngine.h"
 #include "BSystemController.h"
+#include "Actions.h"
 
 USING_NS_CC;
 using namespace Emilia;
@@ -26,11 +27,14 @@ bool GameMainScene::init() {
     return false;
   }
 
+  TTFConfig ttfConfig("fonts/Consola.ttf", 20);
+
   auto visibleSize = Director::getInstance()->getVisibleSize();
   Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
   // log 信息数量初始化
   infoIndex = 0;
+
 
   // 初始化右侧栏
   rightBar = CCLayerColor::create(Color4B::GRAY);
@@ -38,7 +42,9 @@ bool GameMainScene::init() {
   rightBar->setPosition(Vec2(visibleSize.width - 170, 0));
   this->addChild(rightBar, 1);
   // 初始化玩家头像和金钱模型
-  auto PlayerInfo = Label::create("Players", "arial", 15);
+  auto PlayerInfo = Label::createWithTTF(ttfConfig, "Players");
+  PlayerInfo->enableBold();
+  PlayerInfo->setColor(Color3B::BLACK);
   PlayerInfo->setPosition(85, visibleSize.height - 25);
   rightBar->addChild(PlayerInfo, 1);
   for (int i = 0; i < 4; ++i) {    
@@ -51,9 +57,13 @@ bool GameMainScene::init() {
     rightBar->addChild(players[i], 1);
     
     // 头像
-    playerImage[i] = Sprite::create("closeNormal.png");
+	  char str[20];
+	  sprintf(str, "Character%d.png", i + 1);
+	  playerImage[i] = Sprite::create(str);
+
     // 金钱
     moneyLabel[i] = Label::create("10000", "arial", 15);
+    moneyLabel[i]->enableBold();
     
     // 头像位置
     float x = 25;
@@ -69,44 +79,66 @@ bool GameMainScene::init() {
   }
 
   // Log 窗口
-  auto LogInfo = Label::create("Events", "arial", 15);
-  LogInfo->setPosition(85, 125);
+  auto LogInfo = Label::createWithTTF(ttfConfig, "Events");
+  LogInfo->enableBold();
+  LogInfo->setColor(Color3B::BLACK);
+  LogInfo->setPosition(85, 475);
   rightBar->addChild(LogInfo, 1);
   logLabel = Label::create("Test", "arial", 15);
+  logLabel->enableBold();
+  logLabel->setAlignment(TextHAlignment::LEFT, TextVAlignment::CENTER);
+  logLabel->setLineBreakWithoutSpace(true);
+  logLabel->setMaxLineWidth(125);
+  logLabel->setDimensions(125, 425);
   float logX = 75;
-  float logY = 50;
+  float logY = 250;
   logLabel->setPosition(Vec2(logX, logY));
   rightBar->addChild(logLabel, 1);
 
   // 按钮
+  // 游戏结束
+  auto overLabel = Label::createWithTTF(ttfConfig, "End Game");
   // 结束回合
-  auto endLabel = Label::create("End", "arial", 15);
+  auto endLabel = Label::createWithTTF(ttfConfig, "End");
   // 骰子
-  auto rollLabel = Label::create("Roll", "arial", 15);
+  auto rollLabel = Label::createWithTTF(ttfConfig, "Roll");
   // 技能
-  auto skillLabel = Label::create("Skill", "arial", 15);
+  auto skillLabel = Label::createWithTTF(ttfConfig, "Skill");
   // 卖房子
-  auto sellLabel = Label::create("Sell", "arial", 15);
+  auto sellLabel = Label::createWithTTF(ttfConfig, "Sell");
   // 买/建房子
-  auto upgradeLabel = Label::create("Buy", "arial", 15);
+  auto upgradeLabel = Label::createWithTTF(ttfConfig, "Buy");
   
+  auto overButton = MenuItemLabel::create(overLabel, CC_CALLBACK_0(BSystemController::gameOver, BSystemController::getInstance()));
   auto endButton = MenuItemLabel::create(endLabel, CC_CALLBACK_0(GameMainScene::roundEnd, this));
   auto rollButton = MenuItemLabel::create(rollLabel, CC_CALLBACK_0(BSystemController::roll, BSystemController::getInstance()));
   auto skillButton = MenuItemLabel::create(skillLabel, CC_CALLBACK_0(BSystemController::useSkill, BSystemController::getInstance()));
   auto sellButton = MenuItemLabel::create(sellLabel, CC_CALLBACK_0(BSystemController::sellLand, BSystemController::getInstance()));
   auto upgradeButton = MenuItemLabel::create(upgradeLabel, CC_CALLBACK_0(BSystemController::upgradeLand, BSystemController::getInstance()));
+  overButton->setPosition(Vec2(origin.x + 25, origin.x + visibleSize.height - 25));
   endButton->setPosition(Vec2(origin.x + 25, origin.y + 25));
   rollButton->setPosition(Vec2(origin.x + 75, origin.y + 25));
   skillButton->setPosition(Vec2(visibleSize.width - 225, origin.y + 25));
   sellButton->setPosition(Vec2(visibleSize.width - 275, origin.y + 25));
   upgradeButton->setPosition(Vec2(visibleSize.width - 325, origin.y + 25));
 
-  auto menu = Menu::create(endButton, rollButton, skillButton, sellButton, upgradeButton, NULL);
+  auto menu = Menu::create(overButton, endButton, rollButton, skillButton, sellButton, upgradeButton, NULL);
   menu->setPosition(Vec2::ZERO);
   this->addChild(menu, 1);
 
+  //初始化地图
+  TMXTiledMap* tmx = TMXTiledMap::create("map1.tmx");
+  tmx->setPosition((visibleSize.width - 170) / 2, visibleSize.height / 2);
+  tmx->setAnchorPoint(Vec2(0.5, 0.5));
+  this->addChild(tmx, 0);
+
   // 游戏开始
   GameStart();
+
+  //放置player
+  for (int i = 0; i < 4; i++) {
+	this->addChild(Actions::getInstance()->players[i], 1);
+  }
 
   return true;
 }
@@ -115,7 +147,7 @@ bool GameMainScene::init() {
  * 初始化动画模块与控制模块
  */
 void GameMainScene::GameStart() {
-  //Action.getInstance().initial();
+  Actions::getInstance()->initial();
   BSystemController::getInstance()->initial();
   RoundStart();
 }
@@ -137,7 +169,9 @@ void GameMainScene::RoundStart() {
   players[playerID]->setColor(Color3B::RED);
 
   skillID = BSystemController::getInstance()->newSkillID();
-  //Action.getInstance().skillBling();
+  Actions::getInstance()->skillBling(skillID);
+
+  this->addChild(Actions::getInstance()->skill, 3);
 }
 
 /*
@@ -167,7 +201,7 @@ void GameMainScene::log(std::string msg) {
 
   std::string temp = "";
   for (int i = 0; i < infoIndex; ++i) {
-    temp += logInfo[i] + "\n";
+    temp += logInfo[i] + "\n\n";
   }
   logLabel->setString(temp);
 }
@@ -181,7 +215,8 @@ void GameMainScene::roundEnd() {
   if (BSystemController::getInstance()->isRolled()) {
     int playerID = BSystemController::getInstance()->getUserID();
     players[playerID]->setColor(Color3B::YELLOW);
-    
+	this->removeChild(Actions::getInstance()->roller);
+	this->removeChild(Actions::getInstance()->skill);
     BSystemController::getInstance()->nextPlayer();
   }
 }

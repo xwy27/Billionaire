@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.1.5" orientation="orthogonal" renderorder="right-down" width="28" height="24" tilewidth="32" tileheight="32" infinite="0" nextobjectid="1">
+ <tileset firstgid="1" name="base2" tilewidth="32" tileheight="32" tilecount="12" columns="3">
+  <image source="SA-GRoad01.png" width="96" height="128"/>
+ </tileset>
+ <tileset firstgid="13" name="base3" tilewidth="32" tileheight="32" tilecount="12" columns="3">
+  <image source="SA-GroundG02.png" width="96" height="128"/>
+ </tileset>
+ <tileset firstgid="25" name="base3" tilewidth="32" tileheight="32" tilecount="12" columns="3">
+  <image source="../../../Games/RPGVXAce/素材/yms.main.jp/SA-GroundG02.png" width="96" height="128"/>
+ </tileset>
+ <layer name="块层 1" width="28" height="24">
+  <data encoding="base64" compression="zlib">
+   eJxjYmBgYBpBmAWI2ahIE7KPC4h5qEgT6z9qhROx/qPUvlH/jfpv1H+j/hv136j/qOG/4Vq/DzcMAAbDCKE=
+  </data>
+ </layer>
+ <layer name="块层 2" width="28" height="24">
+  <data encoding="base64" compression="zlib">
+   eJxjYEAFAkAsRAWaWCAGxBJUoAcKkOpfSgEu/9LKHbjMpVW4j/qPumDUf9QFo/6jLhj1H3XBqP/oAwZLu2Oot9MA1MYLQQ==
+  </data>
+ </layer>
+</map>

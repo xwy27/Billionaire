@@ -3,7 +3,8 @@
 
 #include <vector>
 #include "GameMainScene.h"
-#define MAX_LANDS_NUMBER 64
+#include "Actions.h"
+#define MAX_LANDS_NUMBER 40
 #define INIT_MONEY 10000
 
 namespace Emilia {
@@ -50,7 +51,7 @@ namespace Emilia {
     bool skillUsed;
 
     //GameMainScene* sceneInstance;
-    // AnimationController* aniInstance;
+    Actions* aniInstance;
 
     BSystemController();
     ~BSystemController();

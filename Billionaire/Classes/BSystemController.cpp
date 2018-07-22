@@ -25,7 +25,7 @@ void BSystemController::initial() {
   rollNumer = 0;
   skillID = 0;
   skillUsed = false;
-  // aniInstance = AnimationController::getInstance();
+  aniInstance = Actions::getInstance();
 
   if (players == nullptr)
     players = new PlayerStatus[4];
@@ -37,7 +37,7 @@ void BSystemController::initial() {
   
   for (auto i = 0; i < MAX_LANDS_NUMBER; ++i) {
     lands[i].initial();
-    lands[i].price = 1000 + i * 47;
+    lands[i].price = 100 * random(1, 10);
   }
 }
 
@@ -67,9 +67,10 @@ int* BSystemController::getLandsPrice() {
 int BSystemController::roll() {
   if (!isRolled()) {
     rollNumer = random() % 6 + 1;
-    string temp = "You rolled" ;
+    string temp = "You rolled " ;
     GameMainScene::getInstance()->log(temp + std::to_string(rollNumer));
-    // aniInstance->playerMove(presentPlayer)
+	aniInstance->roll(rollNumer);
+	aniInstance->playerMove(presentPlayer, players[presentPlayer].location, rollNumer);
     players[presentPlayer].location += rollNumer;
     players[presentPlayer].location %= MAX_LANDS_NUMBER;
     return rollNumer;
@@ -84,9 +85,9 @@ void BSystemController::payCharge() {
     players[presentPlayer].wealth -= lands[players[presentPlayer].location].getCharge();
     players[landOwner].wealth += lands[players[presentPlayer].location].getCharge();
     string temp = "Player ";
-    temp += presentPlayer;
+    temp += std::to_string(presentPlayer);
     temp += " pay ";
-    temp += lands[players[presentPlayer].location].getCharge();
+    temp += std::to_string(lands[players[presentPlayer].location].getCharge());
     temp += " to Player ";
     temp += landOwner;
     GameMainScene::getInstance()->log(temp);
@@ -95,7 +96,7 @@ void BSystemController::payCharge() {
   }
 
   if (players[presentPlayer].wealth < 0) {
-    GameMainScene::getInstance()->log("You have no money \nto pay for the charge! \nYou lose.");
+    GameMainScene::getInstance()->log("You have no money to pay for the charge! \nYou lose.");
     GameMainScene::getInstance()->playerLose();
   }
 }
@@ -169,7 +170,7 @@ void BSystemController::upgradeLand() {
     GameMainScene::getInstance()->updatePlayerState(presentPlayer);
   }
   else {
-    GameMainScene::getInstance()->log("Failed! \nDue to insufficient funds, \nland ownership or current level of land.");
+    GameMainScene::getInstance()->log("Failed! \nDue to insufficient funds, land ownership or current level of land.");
   }
 }
 
@@ -188,7 +189,7 @@ void BSystemController::sellLand() {
     auto gain = (int)((presentLand.price + presentLand.level * 2000) * 0.5);
     players[presentPlayer].wealth += gain;
     string temp = "You gained ";
-    temp += gain;
+    temp += std::to_string(gain);
     temp += " for selling.";
     GameMainScene::getInstance()->log(temp);
   }

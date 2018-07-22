@@ -5,6 +5,7 @@
 
 USING_NS_CC;
 using namespace Emilia;
+using namespace CocosDenshion;
 
 GameMainScene* GameMainScene::instance = nullptr;
 
@@ -98,6 +99,8 @@ bool GameMainScene::init() {
   // 按钮
   // 游戏结束
   auto overLabel = Label::createWithTTF(ttfConfig, "End Game");
+  // 音乐
+  auto musicLabel = Label::createWithTTF(ttfConfig, "Music");
   // 结束回合
   auto endLabel = Label::createWithTTF(ttfConfig, "End");
   // 骰子
@@ -109,20 +112,29 @@ bool GameMainScene::init() {
   // 买/建房子
   auto upgradeLabel = Label::createWithTTF(ttfConfig, "Buy");
   
-  auto overButton = MenuItemLabel::create(overLabel, CC_CALLBACK_0(BSystemController::gameOver, BSystemController::getInstance()));
+  auto overButton = MenuItemLabel::create(overLabel/*, CC_CALLBACK_0(BSystemController::gameOver, BSystemController::getInstance())*/);
+  auto musicButton = MenuItemLabel::create(musicLabel, [=] (Ref* sender) {
+    auto audio = SimpleAudioEngine::getInstance();
+    if (audio->isBackgroundMusicPlaying()) {
+      audio->stopBackgroundMusic();
+    } else {
+      audio->playBackgroundMusic("music/bgm.mp3");
+    }
+  });
   auto endButton = MenuItemLabel::create(endLabel, CC_CALLBACK_0(GameMainScene::roundEnd, this));
   auto rollButton = MenuItemLabel::create(rollLabel, CC_CALLBACK_0(BSystemController::roll, BSystemController::getInstance()));
   auto skillButton = MenuItemLabel::create(skillLabel, CC_CALLBACK_0(BSystemController::useSkill, BSystemController::getInstance()));
   auto sellButton = MenuItemLabel::create(sellLabel, CC_CALLBACK_0(BSystemController::sellLand, BSystemController::getInstance()));
   auto upgradeButton = MenuItemLabel::create(upgradeLabel, CC_CALLBACK_0(BSystemController::upgradeLand, BSystemController::getInstance()));
-  overButton->setPosition(Vec2(origin.x + 25, origin.x + visibleSize.height - 25));
+  overButton->setPosition(Vec2(origin.x + 50, origin.x + visibleSize.height - 25));
+  musicButton->setPosition(Vec2(origin.x + 50, origin.x + visibleSize.height - 50));
   endButton->setPosition(Vec2(origin.x + 25, origin.y + 25));
   rollButton->setPosition(Vec2(origin.x + 75, origin.y + 25));
-  skillButton->setPosition(Vec2(visibleSize.width - 225, origin.y + 25));
+  skillButton->setPosition(Vec2(visibleSize.width - 215, origin.y + 25));
   sellButton->setPosition(Vec2(visibleSize.width - 275, origin.y + 25));
   upgradeButton->setPosition(Vec2(visibleSize.width - 325, origin.y + 25));
 
-  auto menu = Menu::create(overButton, endButton, rollButton, skillButton, sellButton, upgradeButton, NULL);
+  auto menu = Menu::create(overButton, musicButton, endButton, rollButton, skillButton, sellButton, upgradeButton, NULL);
   menu->setPosition(Vec2::ZERO);
   this->addChild(menu, 1);
 

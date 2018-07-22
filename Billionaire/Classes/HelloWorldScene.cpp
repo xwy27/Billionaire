@@ -4,6 +4,8 @@
 
 USING_NS_CC;
 
+using namespace CocosDenshion;
+
 Scene* HelloWorld::createScene()
 {
     return HelloWorld::create();
@@ -28,6 +30,10 @@ bool HelloWorld::init()
 
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+    preloadMusic();
+    auto audio = SimpleAudioEngine::getInstance();
+    audio->playBackgroundMusic("music/bgm.mp3");
 
     /////////////////////////////
     // 2. add a menu item with "X" image, which is clicked to quit the program
@@ -124,8 +130,18 @@ bool HelloWorld::gameStart(Touch *touch, Event *unused_event) {
 	}
 }
 
-void HelloWorld::Music() {
+void HelloWorld::preloadMusic() {
+  auto audio = SimpleAudioEngine::getInstance();
+  audio->preloadBackgroundMusic("music/bgm.mp3");
+}
 
+void HelloWorld::Music() {
+  auto audio = SimpleAudioEngine::getInstance();
+  if (audio->isBackgroundMusicPlaying()) {
+    audio->stopBackgroundMusic();
+  } else {
+    audio->playBackgroundMusic("music/bgm.mp3");
+  }
 }
 
 

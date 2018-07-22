@@ -5,7 +5,6 @@
 #include "GameMainScene.h"
 #define MAX_LANDS_NUMBER 64
 #define INIT_MONEY 10000
-USING_NS_CC;
 
 namespace Emilia {
   struct PlayerStatus {

@@ -1,5 +1,7 @@
 #include "BSystemController.h"
+#include <string>
 using namespace Emilia;
+using std::string;
 
 BSystemController::BSystemController() {}
 
@@ -75,7 +77,13 @@ void BSystemController::payCharge() {
   if (landOwner != -1 && landOwner != presentPlayer){
     players[presentPlayer].wealth -= lands[players[presentPlayer].location].getCharge();
     players[landOwner].wealth += lands[players[presentPlayer].location].getCharge();
-    sceneInstance->log("Player " + presentPlayer + " pay "+ lands[players[presentPlayer].location].getCharge() + " to Player " + landOwner);
+    string temp = "Player ";
+    temp += presentPlayer;
+    temp += " pay ";
+    temp += lands[players[presentPlayer].location].getCharge();
+    temp += " to Player ";
+    temp += landOwner;
+    sceneInstance->log(temp);
     sceneInstance->updatePlayerState(presentPlayer);
     sceneInstance->updatePlayerState(landOwner);
   }
@@ -173,7 +181,10 @@ void BSystemController::sellLand() {
     }
     auto gain = (int)((presentLand.price + presentLand.level * 2000) * 0.5);
     players[presentPlayer].wealth += gain;
-    log("You gained " + gain + " for selling");
+    string temp = "You gained ";
+    temp += gain;
+    temp += " for selling.";
+    sceneInstance->log(temp);
   }
   else {
     sceneInstance->log("You're not able to sell others' land...");

@@ -11,6 +11,7 @@ namespace Emilia {
   struct PlayerStatus {
     int wealth;
     int location;
+    int order;
     bool isAlive;
     std::vector<int> lands;
     // id is stored as 'index' + 1
@@ -18,6 +19,7 @@ namespace Emilia {
       wealth = INIT_MONEY;
       location = 0;
       isAlive = true;
+      order = 0;
       lands.clear();
     }
   };
@@ -49,6 +51,8 @@ namespace Emilia {
     int rollNumer;
     int skillID;
     bool skillUsed;
+    bool isGameOver;
+    int playersLeft;
 
     //GameMainScene* sceneInstance;
     Actions* aniInstance;
@@ -74,6 +78,7 @@ namespace Emilia {
     void sellLand();
     bool isRolled();
     void nextPlayer();
+    void gameOver();
 
   };
 }

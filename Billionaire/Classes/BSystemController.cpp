@@ -25,6 +25,8 @@ void BSystemController::initial() {
   rollNumer = 0;
   skillID = 0;
   skillUsed = false;
+  isGameOver = false;
+  playersLeft = 4;
   aniInstance = Actions::getInstance();
 
   if (players == nullptr)
@@ -76,10 +78,13 @@ int BSystemController::roll() {
     return rollNumer;
   } else {
     GameMainScene::getInstance()->log("You've rolled!");
+    return rollNumer;
   }
 }
 
 void BSystemController::payCharge() {
+  if (isGameOver)
+    return;
   auto landOwner = lands[players[presentPlayer].location].owner;
   if (landOwner != -1 && landOwner != presentPlayer){
     players[presentPlayer].wealth -= lands[players[presentPlayer].location].getCharge();
@@ -89,19 +94,23 @@ void BSystemController::payCharge() {
     temp += " pay ";
     temp += std::to_string(lands[players[presentPlayer].location].getCharge());
     temp += " to Player ";
-    temp += std::to_string(landOwner);
+    temp += landOwner;
     GameMainScene::getInstance()->log(temp);
     GameMainScene::getInstance()->updatePlayerState(presentPlayer);
     GameMainScene::getInstance()->updatePlayerState(landOwner);
   }
 
   if (players[presentPlayer].wealth < 0) {
+    players[presentPlayer].order = playersLeft--;
+    players[presentPlayer].isAlive = false;
     GameMainScene::getInstance()->log("You have no money to pay for the charge! \nYou lose.");
     GameMainScene::getInstance()->playerLose();
   }
 }
 
 void BSystemController::useSkill() {
+  if (isGameOver)
+    return;
   if (skillUsed) {
     GameMainScene::getInstance()->log("You've used your skill!");
     return;
@@ -143,13 +152,15 @@ void BSystemController::useSkill() {
 }
 
 void BSystemController::buyLand() {
+  if (isGameOver)
+    return;
   auto& presentLand = lands[players[presentPlayer].location];
   if (presentLand.owner == -1) {
     if (presentLand.price <= players[presentPlayer].wealth) {
       players[presentPlayer].wealth -= presentLand.price;
       players[presentPlayer].lands.push_back(players[presentPlayer].location);
       presentLand.owner = presentPlayer;
-      GameMainScene::getInstance()->log("Successfully bought with " + std::to_string(presentLand.price) + "!");
+      GameMainScene::getInstance()->log("Successfully bought!");
     }
     else {
       GameMainScene::getInstance()->log("Insufficient fund...");
@@ -161,12 +172,14 @@ void BSystemController::buyLand() {
 }
 
 void BSystemController::upgradeLand() {
+  if (isGameOver)
+    return;
   auto& presentLand = lands[players[presentPlayer].location];
   if (presentLand.owner == presentPlayer && players[presentPlayer].wealth >= 2000 &&
     presentLand.level < 3) {
     presentLand.level += 1;
     players[presentPlayer].wealth -= 2000;
-    GameMainScene::getInstance()->log("Successfully Upgrade with 2000!");
+    GameMainScene::getInstance()->log("Successfully Upgrade!");
     GameMainScene::getInstance()->updatePlayerState(presentPlayer);
   }
   else {
@@ -175,6 +188,8 @@ void BSystemController::upgradeLand() {
 }
 
 void BSystemController::sellLand() {
+  if (isGameOver)
+    return;
   auto& presentLand = lands[players[presentPlayer].location];
   if (presentLand.owner == presentPlayer) {
     presentLand.owner = -1;
@@ -204,6 +219,8 @@ bool BSystemController::isRolled() {
 }
 
 void BSystemController::nextPlayer() {
+  if (isGameOver)
+    return;
   do {
     presentPlayer = (presentPlayer + 1) % 4;
   } while(!players[presentPlayer].isAlive);
@@ -212,4 +229,51 @@ void BSystemController::nextPlayer() {
   skillUsed = false;
 
   GameMainScene::getInstance()->RoundStart();
+}
+
+void BSystemController::gameOver() {
+  isGameOver = true;
+  int wealths[4], houses[4];
+  for (int i = 0; i < 4; ++i) {
+    wealths[i] = players[i].wealth;
+    houses[i] = 0;
+    for (auto iter : players[i].lands) {
+      houses[i] += lands[iter].price + 2000 * lands[iter].level;
+    }
+  }
+  int orders[4] = { 0, 1, 2, 3 };
+  for (auto i = 0; i < 4; ++i) {
+    for (auto t = 0; t < 3; ++t) {
+      if (players[orders[t]].order > players[orders[t + 1]].order) {
+        int temp = orders[t];
+        orders[t] = orders[t + 1];
+        orders[t + 1] = temp;
+      }
+      else if (players[orders[t]].order == players[orders[t + 1]].order)
+      {
+        if (wealths[orders[t]] + houses[orders[t]] < wealths[orders[t + 1]] + houses[orders[t + 1]]) {
+          int temp = orders[t];
+          orders[t] = orders[t + 1];
+          orders[t + 1] = temp;
+        }
+      }
+    }
+  }
+
+  string result = "GameOver!\n";
+  result += "===Rank===\n";
+  result += "1st: Player " + std::to_string(orders[0]) + "\n";
+  result += "\tWealth: " + std::to_string(wealths[orders[0]]) + "\n";
+  result += "\tWorth of Houses: " + std::to_string(houses[orders[0]]) + "\n";
+  result += "2nd: Player " + std::to_string(orders[1]) + "\n";
+  result += "\tWealth: " + std::to_string(wealths[orders[1]]) + "\n";
+  result += "\tWorth of Houses: " + std::to_string(houses[orders[1]]) + "\n";
+  result += "3rd: Player " + std::to_string(orders[2]) + "\n";
+  result += "\tWealth: " + std::to_string(wealths[orders[2]]) + "\n";
+  result += "\tWorth of Houses: " + std::to_string(houses[orders[2]]) + "\n";
+  result += "4th: Player " + std::to_string(orders[3]) + "\n";
+  result += "\tWealth: " + std::to_string(wealths[orders[3]]) + "\n";
+  result += "\tWorth of Houses: " + std::to_string(houses[orders[3]]) + "\n";
+
+  GameMainScene::getInstance()->log(result);
 }

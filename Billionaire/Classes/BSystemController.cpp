@@ -67,7 +67,8 @@ int* BSystemController::getLandsPrice() {
 int BSystemController::roll() {
   if (!isRolled()) {
     rollNumer = random() % 6 + 1;
-    GameMainScene::getInstance()->log("You rolled " + rollNumer);
+    string temp = "You rolled" ;
+    GameMainScene::getInstance()->log(temp + std::to_string(rollNumer));
     // aniInstance->playerMove(presentPlayer)
     players[presentPlayer].location += rollNumer;
     players[presentPlayer].location %= MAX_LANDS_NUMBER;
@@ -94,7 +95,7 @@ void BSystemController::payCharge() {
   }
 
   if (players[presentPlayer].wealth < 0) {
-    GameMainScene::getInstance()->log("You have no money to pay for the charge! \nYou lose.");
+    GameMainScene::getInstance()->log("You have no money \nto pay for the charge! \nYou lose.");
     GameMainScene::getInstance()->playerLose();
   }
 }
@@ -168,7 +169,7 @@ void BSystemController::upgradeLand() {
     GameMainScene::getInstance()->updatePlayerState(presentPlayer);
   }
   else {
-    GameMainScene::getInstance()->log("Failed! Due to insufficient funds, \nland ownership or current level of land.");
+    GameMainScene::getInstance()->log("Failed! \nDue to insufficient funds, \nland ownership or current level of land.");
   }
 }
 
